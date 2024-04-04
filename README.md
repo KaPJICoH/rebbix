@@ -32,7 +32,6 @@
 $ npm install
 $ docker-compose up -d
 $ cp .env.dist .env
-$
 ```
 
 ## Running the app
