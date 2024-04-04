@@ -1,4 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { ExchangeClient } from './client/exchange.client';
 import { ExchangeRate } from './dto/exchange-rate.dto';
 
@@ -25,8 +30,11 @@ export class ExchangeRatesProvider {
     )[0];
 
     if (rate === undefined) {
-      //@todo change an error to visible in response
-      throw new Error('Exchange rate not found');
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        result: false,
+        error: 'Exchange rate for provided currencies not found',
+      });
     }
 
     return rate;

@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import { ExchangeClient } from './exchange.client';
@@ -22,8 +27,11 @@ export class MonobankExchangeClient implements ExchangeClient {
           rate.currencyCodeSecond === fromCurrency),
     )[0];
     if (rate === undefined) {
-      //@todo change an error to visible in response
-      throw new Error('Exchange rate not found');
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        result: false,
+        error: 'Exchange rate for provided currencies not found',
+      });
     }
 
     return rate;
@@ -34,7 +42,15 @@ export class MonobankExchangeClient implements ExchangeClient {
       this.httpService.get('https://api.monobank.ua/bank/currency').pipe(
         map((response) => response.data),
         catchError((error) => {
-          return 'error';
+          throw new HttpException(
+            {
+              status: HttpStatus.INTERNAL_SERVER_ERROR,
+              result: false,
+              error: 'Internal server error',
+            },
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            { cause: error },
+          );
         }),
       ),
     );
