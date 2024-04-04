@@ -12,6 +12,6 @@ export class AppConfig {
   exchange = {
     rates: {
       cache_ttl: Number(process.env.EXCHANGE_RATES_CACHE_TTL),
-    }
-  }
+    },
+  };
 }
