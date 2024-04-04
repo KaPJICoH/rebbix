@@ -6,16 +6,15 @@ import {
 } from '@nestjs/common';
 import { ExchangeClient } from './client/exchange.client';
 import { ExchangeRate } from './dto/exchange-rate.dto';
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { AppConfig } from '../config/app.config';
 
 @Injectable()
 export class ExchangeRatesProvider {
-  private readonly cache: Map<string, ExchangeRate[]> = new Map<
-    string,
-    ExchangeRate[]
-  >(); //@todo should be redis  or other service for that
-
   constructor(
     @Inject(ExchangeClient) private readonly client: ExchangeClient,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly config: AppConfig,
   ) {}
 
   public async getExchangeRate(
@@ -41,11 +40,14 @@ export class ExchangeRatesProvider {
   }
 
   public async getExchangeRates(): Promise<ExchangeRate[]> {
-    let rates = this.cache.get('rates');
+    let rates: ExchangeRate[] = await this.cacheManager.get('rates');
     if (rates == undefined) {
       rates = await this.client.getExchangeRates();
-      this.cache.set('rates', rates);
-      //@todo add expiration time for cache
+      await this.cacheManager.set(
+        'rates',
+        rates,
+        this.config.exchange.rates.cache_ttl,
+      );
     }
 
     return rates;
