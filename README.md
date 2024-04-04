@@ -71,3 +71,37 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Installation
+
+```bash
+$ npm install
+$ docker-compose up -d
+$ cp .env.dist .env
+$
+```
+
+## Running the app
+
+```bash
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:watch
+
+# production mode
+$ npm run start:prod
+```
+
+## Test request
+
+```bash
+curl --location 'http://localhost:3000/exchanges' \
+--header 'Content-Type: application/json' \
+--data '{
+    "from": 840,
+    "to": 980,
+    "amount": 100
+}'
+```
