@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+
+  rebbix_redis:
+    container_name: rebbix_redis_1
+    image: redis:latest
+    expose:
+      - 6379
+    ports:
+      - "2015:6379"
+    networks:
+      rebbix_net:
+        ipv4_address: 172.16.20.15
+
+networks:
+  rebbix_net:
+    name: rebbix_net
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.20.0/24
