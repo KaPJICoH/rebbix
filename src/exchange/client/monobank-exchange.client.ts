@@ -8,18 +8,19 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import { ExchangeClient } from './exchange.client';
 import { ExchangeRate } from '../dto/exchange-rate.dto';
+import { CurrencyCode } from '../currency-code.enum';
 
 @Injectable()
 export class MonobankExchangeClient implements ExchangeClient {
   constructor(private readonly httpService: HttpService) {}
 
   public async getExchangeRate(
-    fromCurrency: number,
-    toCurrency: number,
+    fromCurrency: CurrencyCode,
+    toCurrency: CurrencyCode,
   ): Promise<ExchangeRate> {
     //@todo enum of currency by ISO 4217
-    const exchangeRates = await this.getExchangeRates();
-    const rate = exchangeRates.filter(
+    const exchangeRates: ExchangeRate[] = await this.getExchangeRates();
+    const rate: ExchangeRate | undefined = exchangeRates.filter(
       (rate: ExchangeRate) =>
         (rate.currencyCodeFirst === fromCurrency &&
           rate.currencyCodeSecond === toCurrency) ||
@@ -57,8 +58,8 @@ export class MonobankExchangeClient implements ExchangeClient {
 
     return response.map(
       (rate: {
-        currencyCodeA: number;
-        currencyCodeB: number;
+        currencyCodeA: CurrencyCode;
+        currencyCodeB: CurrencyCode;
         rateBuy?: number;
         rateSell?: number;
         rateCross?: number;

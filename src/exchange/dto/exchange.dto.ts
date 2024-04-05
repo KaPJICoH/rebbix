@@ -1,13 +1,16 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber } from 'class-validator';
+import { CurrencyCode } from '../currency-code.enum';
 
 export class ExchangeDto {
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
-  from: number;
+  @IsEnum(CurrencyCode)
+  from: CurrencyCode;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
-  to: number;
+  @IsEnum(CurrencyCode)
+  to: CurrencyCode;
 
   @IsNumber()
   @IsNotEmpty()

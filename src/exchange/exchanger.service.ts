@@ -1,16 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { ExchangeRatesProvider } from './exchange-rates.provider';
+import { CurrencyCode } from './currency-code.enum';
+import { ExchangeRate } from './dto/exchange-rate.dto';
 
 @Injectable()
 export class ExchangerService {
   constructor(private readonly exchangeRatesProvider: ExchangeRatesProvider) {}
 
   public async exchange(
-    from: number,
-    to: number,
+    from: CurrencyCode,
+    to: CurrencyCode,
     amount: number,
   ): Promise<number> {
-    const rate = await this.exchangeRatesProvider.getExchangeRate(from, to);
+    if (from === to) {
+      return amount;
+    }
+
+    const rate: ExchangeRate = await this.exchangeRatesProvider.getExchangeRate(
+      from,
+      to,
+    );
     let value: number = 0;
     if (rate.currencyCodeFirst === from) {
       value = amount * rate.rateBuy;
